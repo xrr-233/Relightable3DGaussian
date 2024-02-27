@@ -30,7 +30,7 @@ def training(dataset: ModelParams, opt: OptimizationParams, pipe: PipelineParams
     Setup Gaussians
     """
     gaussians = GaussianModel(dataset.sh_degree, render_type=args.type)
-    scene = Scene(dataset, gaussians)
+    scene = Scene(dataset, gaussians, load_iteration=args.loaded_iter)
     if args.checkpoint:
         print("Create Gaussians from checkpoint {}".format(args.checkpoint))
         first_iter = gaussians.create_from_ckpt(args.checkpoint, restore_optimizer=True)
@@ -43,6 +43,10 @@ def training(dataset: ModelParams, opt: OptimizationParams, pipe: PipelineParams
     else:
         gaussians.create_from_pcd(scene.scene_info.point_cloud, scene.cameras_extent)
 
+    with open("clone.txt", "w") as f:
+        f.write(f"0\n")
+    with open("split.txt", "w") as f:
+        f.write(f"0\n")
     gaussians.training_setup(opt)
 
     """
@@ -412,6 +416,7 @@ if __name__ == "__main__":
     parser.add_argument("--quiet", action="store_true")
     parser.add_argument("--checkpoint_interval", type=int, default=5000)
     parser.add_argument("-c", "--checkpoint", type=str, default=None)
+    parser.add_argument("--loaded_iter", type=int, default=None)
     args = parser.parse_args(sys.argv[1:])
     print(f"Current model path: {args.model_path}")
     print(f"Current rendering type:  {args.type}")

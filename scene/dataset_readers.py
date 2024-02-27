@@ -197,7 +197,12 @@ def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder, debug=False
 
         # add depth for COLMAP dataset
         depth = None
-        depth_path = os.path.join(os.path.dirname(images_folder), "filtered/depths", os.path.basename(extr.name).replace(".png", ".tiff"))
+        if (os.path.basename(extr.name)[-3:] == "JPG"):
+            depth_path = os.path.join(os.path.dirname(images_folder), "filtered/depths",
+                                      os.path.basename(extr.name).replace(".JPG", ".tiff"))
+        else:
+            depth_path = os.path.join(os.path.dirname(images_folder), "filtered/depths",
+                                      os.path.basename(extr.name).replace(".png", ".tiff"))
         if os.path.exists(depth_path):
             depth = load_depth(depth_path)
 

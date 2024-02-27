@@ -380,6 +380,8 @@ class GaussianModel:
         shs[:, 3:, 1:] = 0.0
 
         print("Number of points at initialisation : ", fused_point_cloud.shape[0])
+        with open("points.txt", "w") as f:
+            f.write(f"{fused_point_cloud.shape[0]}\n")
 
         dist2 = torch.clamp_min(distCUDA2(torch.from_numpy(np.asarray(pcd.points)).float().cuda()), 0.0000001)
         scales = torch.log(torch.sqrt(dist2))[..., None].repeat(1, 3)
@@ -532,9 +534,20 @@ class GaussianModel:
         xyz = np.stack((np.asarray(plydata.elements[0]["x"]),
                         np.asarray(plydata.elements[0]["y"]),
                         np.asarray(plydata.elements[0]["z"])), axis=1)
-        normal = np.stack((np.asarray(plydata.elements[0]["nx"]),
-                           np.asarray(plydata.elements[0]["ny"]),
-                           np.asarray(plydata.elements[0]["nz"])), axis=1)
+        try:
+            normal = np.stack((np.asarray(plydata.elements[0]["nx"]),
+                               np.asarray(plydata.elements[0]["ny"]),
+                               np.asarray(plydata.elements[0]["nz"])), axis=1)
+        except:
+            phi = np.random.uniform(0, 2 * np.pi, xyz.shape[0])
+            costheta = np.random.uniform(-1, 1, xyz.shape[0])
+            theta = np.arccos(costheta)
+
+            x = np.sin(theta) * np.cos(phi)
+            y = np.sin(theta) * np.sin(phi)
+            z = np.cos(theta)
+
+            normal = np.vstack((x, y, z)).T
         opacities = np.asarray(plydata.elements[0]["opacity"])[..., np.newaxis]
 
         shs_dc = np.zeros((xyz.shape[0], 3, 1))
@@ -572,6 +585,7 @@ class GaussianModel:
             shs_dc, dtype=torch.float, device="cuda").transpose(1, 2).contiguous().requires_grad_(True))
         self._shs_rest = nn.Parameter(torch.tensor(
             shs_extra, dtype=torch.float, device="cuda").transpose(1, 2).contiguous().requires_grad_(True))
+        self.max_radii2D = torch.zeros((self.get_xyz.shape[0]), device="cuda")
 
         self.active_sh_degree = self.max_sh_degree
 
@@ -781,6 +795,9 @@ class GaussianModel:
         rots = build_rotation(self._rotation[selected_pts_mask]).repeat(N, 1, 1)
         new_xyz = torch.bmm(rots, samples.unsqueeze(-1)).squeeze(-1) + self.get_xyz[selected_pts_mask].repeat(N, 1)
 
+        with open("split.txt", "a") as f:
+            f.write(f"{new_xyz.shape[0]}\n")
+
         new_normal = self._normal[selected_pts_mask].repeat(N, 1)
         new_scaling = self.scaling_inverse_activation(self.get_scaling[selected_pts_mask].repeat(N, 1) / (0.8 * N))
         new_rotation = self._rotation[selected_pts_mask].repeat(N, 1)
@@ -832,6 +849,9 @@ class GaussianModel:
         new_scaling = self._scaling[selected_pts_mask]
         new_rotation = self._rotation[selected_pts_mask]
 
+        with open("clone.txt", "a") as f:
+            f.write(f"{new_xyz.shape[0]}\n")
+
         args = [new_xyz, new_normal, new_shs_dc, new_shs_rest, new_opacities,
                 new_scaling, new_rotation]
         if self.use_pbr:
@@ -866,6 +886,8 @@ class GaussianModel:
         self.densify_and_clone(grads, max_grad, extent, grads_normal, max_grad_normal)
         self.densify_and_split(grads, max_grad, extent, grads_normal, max_grad_normal)
         # self.densify_and_compact()
+        with open("points.txt", "a") as f:
+            f.write(f"{self.xyz_gradient_accum.shape[0]}\n")
 
         prune_mask = (self.get_opacity < min_opacity).squeeze()
         if max_screen_size:
