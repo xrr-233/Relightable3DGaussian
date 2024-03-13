@@ -112,24 +112,19 @@ sh script/run_tnt.sh
 Explicit point cloud representation facilitates composition. We recommend that users explore [cloud compare](https://www.cloudcompare.org/) to implement point cloud transformations such as scaling, translation, and rotation to composite a new scene.
 For multi-object composition and relighting result demonstrated in the paper, you could run:
 ```
-python relighting.py -co configs-custom/shadow-mouse/teaser -e env_map/teaser.hdr --output output/shadow-mouse/teaser_trace --sample 384
+python relighting.py -co configs-custom/$SCENE_NAME/teaser -e env_map/teaser.hdr --output output/$SCENE_NAME/teaser_trace --sample 384
 ```
 For multi-object composition and relighting video illustrated in the project page, you could run:
 ```
-python relighting.py -co configs-custom/shadow-mouse/nerf_syn -e env_map/composition.hdr --output output/shadow-mouse/nerf_syn --sample_num 384 --video 
+python relighting.py -co configs-custom/$SCENE_NAME/nerf_syn -e env_map/composition.hdr --output output/$SCENE_NAME/nerf_syn --sample_num 384 --video 
 ```
 
 ```
-python relighting.py -co configs-custom/shadow-mouse/nerf_syn_light -e env_map/composition.hdr --output output/shadow-mouse/nerf_syn_light --sample_num 384 --video 
+python relighting.py -co configs-custom/$SCENE_NAME/nerf_syn_light -e env_map/composition.hdr --output output/$SCENE_NAME/nerf_syn_light --sample_num 384 --video 
 ```
 For multi-scene composition video, you could run:
 ```
-python relighting.py \
--co configs/tnt \
--e "env_map/ocean_from_horn.jpg" \
---output "output/relighting/tnt" \
---sample_num 384 \
---video
+python relighting.py -co configs-custom/$SCENE_NAME/tnt -e env_map/ocean_from_horn.jpg --output output/$SCENE_NAME/tnt --sample_num 384 --video
 ```
 ### GUI
 We also provide a GUI for visualization. You can utilize this GUI to supervise the training process by just adding the **--gui** option to the command for training. You can also visualize the model after training by running:
