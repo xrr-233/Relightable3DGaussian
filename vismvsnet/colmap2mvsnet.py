@@ -307,7 +307,7 @@ if __name__ == '__main__':
     cam_dir = os.path.join(args.dense_folder, 'cams')
     # renamed_dir = os.path.join(args.dense_folder, 'images')
 
-    cameras, images, points3d = read_model(model_dir, '.bin')
+    cameras, images, points3d = read_model(model_dir, '.txt')
     num_images = len(list(images.items()))
 
     param_type = {
@@ -347,7 +347,6 @@ if __name__ == '__main__':
         e[:3, 3] = image.tvec
         e[3, 3] = 1
         extrinsic[image_id] = e
-        print(image_id)
 
     print('extrinsic[1]\n', extrinsic[1], end='\n\n')
 

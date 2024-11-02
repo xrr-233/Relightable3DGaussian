@@ -9,6 +9,7 @@ import imageio.v2 as imageio
 from typing import NamedTuple
 from scene.colmap_loader import read_extrinsics_text, read_intrinsics_text, qvec2rotmat, \
     read_extrinsics_binary, read_intrinsics_binary, read_points3D_binary, read_points3D_text
+from utils.camera_utils import JSON_to_camera
 from utils.graphics_utils import getWorld2View2, focal2fov, fov2focal
 from pathlib import Path
 from plyfile import PlyData, PlyElement
@@ -42,7 +43,7 @@ class CameraInfo(NamedTuple):
     normal: np.array = None
     hdr: bool = False
     depth: np.array = None
-    image_mask: np.array = None
+    image_mask: Image.Image = None
 
 
 class SceneInfo(NamedTuple):
@@ -68,14 +69,14 @@ def load_img(path):
                 mask = np.clip(all_data[..., 3:4], 0, 1)
                 img = img * mask
         else:
-            img = imageio.imread(path)
-            import pdb;
+            img = imageio.imread(path).astype(np.float32)
+            import pdb
             pdb.set_trace()
         img = np.nan_to_num(img)
         hdr = True
     else:  # LDR image
-        img = imageio.imread(path)
-        img = img / 255
+        img = Image.open(path)
+        # img = (img / 255).astype(np.float32)
         # img[..., 0:3] = srgb_to_rgb_np(img[..., 0:3])
         hdr = False
     return img, hdr
@@ -552,5 +553,5 @@ def readNeILFInfo(path, white_background, eval, debug=False):
 sceneLoadTypeCallbacks = {
     "Colmap": readColmapSceneInfo,
     "Blender": readNerfSyntheticInfo,
-    "NeILF": readNeILFInfo,
+    "NeILF": readNeILFInfo
 }

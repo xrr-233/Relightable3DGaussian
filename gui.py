@@ -382,7 +382,7 @@ if __name__ == '__main__':
         if args.iteration == -1:
             loaded_iter = searchForMaxIteration(os.path.join(args.model_path, "point_cloud"))
         else:
-            loaded_iter = args.loaded_iter
+            loaded_iter = args.iteration
         gaussians.load_ply(
             os.path.join(args.model_path, "point_cloud", "iteration_" + str(loaded_iter), "point_cloud.ply"))
 
@@ -423,5 +423,16 @@ if __name__ == '__main__':
                   render_fn=render_fn, render_kwargs=render_kwargs,
                   mode='pbr', use_hdr2ldr=args.hdr2ldr)
 
+    # my_dict = dict()
+    # fr = 0
     while True:
         windows.render()
+        # print("recording")
+        # my_dict[fr] = windows.cam.pose.tolist()
+        # fr += 1
+        # if (fr == 30):
+        #     print(my_dict)
+        #     json_str = json.dumps(my_dict, indent=4)
+        #     print(json_str)
+        #     with open('data.json', 'w') as f:
+        #         json.dump(my_dict, f, indent=4)

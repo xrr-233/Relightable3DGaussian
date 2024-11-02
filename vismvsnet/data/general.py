@@ -28,7 +28,7 @@ class MyDataset(data.Dataset):
         ref_idx = i
         src_idxs = self.pair[ref_idx][:self.num_src]
 
-        ref, *srcs = [os.path.join(self.root, f'images/{self.names[idx]}.png') for idx in [ref_idx] + src_idxs]
+        ref, *srcs = [os.path.join(self.root, f'images/{self.names[idx]}.jpg') for idx in [ref_idx] + src_idxs]
         ref_cam, *srcs_cam = [os.path.join(self.root, f'cams/{self.names[idx]}_cam.txt') for idx in [ref_idx] + src_idxs]
         skip = 0
 

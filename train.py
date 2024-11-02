@@ -43,10 +43,6 @@ def training(dataset: ModelParams, opt: OptimizationParams, pipe: PipelineParams
     else:
         gaussians.create_from_pcd(scene.scene_info.point_cloud, scene.cameras_extent)
 
-    with open("clone.txt", "w") as f:
-        f.write(f"0\n")
-    with open("split.txt", "w") as f:
-        f.write(f"0\n")
     gaussians.training_setup(opt)
 
     """
@@ -412,7 +408,7 @@ if __name__ == "__main__":
     parser.add_argument('--gui', action='store_true', default=False, help="use gui")
     parser.add_argument('-t', '--type', choices=['render', 'normal', 'neilf'], default='render')
     parser.add_argument("--test_interval", type=int, default=2500)
-    parser.add_argument("--save_interval", type=int, default=5000)
+    parser.add_argument("--save_interval", type=int, default=2500)
     parser.add_argument("--quiet", action="store_true")
     parser.add_argument("--checkpoint_interval", type=int, default=5000)
     parser.add_argument("-c", "--checkpoint", type=str, default=None)

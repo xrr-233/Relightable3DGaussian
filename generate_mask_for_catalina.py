@@ -1,8 +1,9 @@
 import os
 import cv2
 from PIL import Image
+from tqdm import tqdm
 
-dataset_path = "data/shadow-ayumu"
+dataset_path = "data/municipal-r3dg"
 image_dir = os.path.join(dataset_path, 'images')
 all_imgs = os.listdir(image_dir)
 
@@ -21,7 +22,7 @@ def generate_mask():
 def crop_and_resize(aspect_ratio_width, aspect_ratio_height):
     os.makedirs(os.path.join(dataset_path, 'resized_images'), exist_ok=True)
     resized_dir = os.path.join(dataset_path, 'resized_images')
-    for img_name in all_imgs:
+    for img_name in tqdm(all_imgs):
         image = Image.open(os.path.join(image_dir, img_name))
         target_aspect_ratio = aspect_ratio_width / aspect_ratio_height
         current_aspect_ratio = W / H
@@ -44,7 +45,6 @@ def crop_and_resize(aspect_ratio_width, aspect_ratio_height):
 
         # Crop the image
         cropped_image = image.crop((left, top, right, bottom))
-        print(cropped_image.size)
         resized_image = cropped_image.resize((aspect_ratio_width, aspect_ratio_height))
 
         # Save the cropped image
@@ -60,6 +60,6 @@ def convert2jpg():
         cv2.imwrite(os.path.join(resized_dir, img_name), jpg_img)
 
 if __name__ == '__main__':
-    # crop_and_resize(1920, 1080)
-    generate_mask()
-    convert2jpg()
+    crop_and_resize(1600, 1200)
+    # generate_mask()
+    # convert2jpg()

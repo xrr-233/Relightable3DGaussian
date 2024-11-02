@@ -267,7 +267,7 @@ class UNet(nn.Module):
             if len(b) == 3: deconv, post_concat, res = b
             elif len(b) == 2: deconv, post_concat = b
             x = deconv(x)
-            x = torch.cat([x, enc_out[-2-i]], 1)
+            x = torch.cat([x, enc_out[-2-i]], 1) # W, H must be dividable by 8, e.g. for 3:2 image, 2256*1504
             x = post_concat(x)
             if len(b) == 3: x = res(x)
             dec_out.append(x)

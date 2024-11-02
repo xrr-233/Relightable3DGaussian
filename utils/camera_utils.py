@@ -5,13 +5,14 @@ import torch
 import torchvision
 from torchvision.transforms.functional import InterpolationMode
 from scene.cameras import Camera
+from utils.general_utils import PILtoTorch
 from utils.graphics_utils import focal2fov
 
 WARNED = False
 
 
 def loadCam(args, id, cam_info, resolution_scale):
-    orig_h, orig_w = cam_info.image.shape[:2]
+    orig_w, orig_h = cam_info.image.size
 
     if args.resolution in [1, 2, 4, 8]:
         scale = resolution_scale * args.resolution
@@ -32,7 +33,7 @@ def loadCam(args, id, cam_info, resolution_scale):
         scale = global_down * resolution_scale
     resolution = (int(orig_h / scale), int(orig_w / scale))
 
-    image = torch.from_numpy(cam_info.image).float().permute(2, 0, 1)
+    image = PILtoTorch(cam_info.image, resolution)
     if scale == 1:
         resized_image_rgb = image
     else:
